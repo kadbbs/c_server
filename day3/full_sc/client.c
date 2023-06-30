@@ -27,7 +27,7 @@ int main(int argc, const char *argv[])
 		return -1;
 	}
 	int port=6000;
-	char *ip="192.168.12.108";
+	char *ip="127.0.0.1";
 	server.sin_family = AF_INET;
 	server.sin_port = htons(port);
 	server.sin_addr.s_addr = inet_addr(ip);

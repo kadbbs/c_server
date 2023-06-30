@@ -10,6 +10,7 @@
 *
 ================================================================*/
 #include <stdio.h>
+#include <math.h>
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -25,7 +26,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #define SERVER_PORT 6000
-#define SERVER_IP "192.168.12.108"
+#define SERVER_IP "127.0.0.1"
 
 
 int my_strncmp(char *str1,char *str2,int n){
@@ -73,8 +74,12 @@ int main(){
     int i=0;
     char *filelist[100];
     while((dir_volu=readdir(dir_tree))!=NULL){
-      filelist[i]= dir_volu->d_name; 
+      filelist[i]= dir_volu->d_name;
+	  printf("filename:%s",filelist[i]);
+	  printf("\n");
+	  i++; 
     }
+	closedir(dir_tree);
 	//char file_path_volu[9]="./one.txt";
     //char *file_path="./one.txt";
 //	int file_fd=open("./one.txt",O_RDWR|O_CREAT|O_APPEND,0664);
@@ -120,7 +125,7 @@ int main(){
     int push_client_fd=-2;
     int push_flog=-2;
     int clone_flog=-2;
-    char *file_name="q";
+    char *file_name;
     char file_path[100]="./";
 	while(1){
 	
@@ -145,7 +150,8 @@ int main(){
             if(!inform){
               //file_path=strcpy(file_path_volu, rbuf+6);
                 file_name=strstr(rbuf,":")+1;
-				file_name[strlen(file_path)-1]='\0';
+				file_name[strlen(file_name)-1]='\0';
+				printf("path_name=%s\n",file_name);
                 strncat(file_path,file_name,strlen(file_name));
                 printf("path_name=%s\n",file_name);
             }
@@ -175,10 +181,13 @@ int main(){
                     }
                     
 				    write(new_fd,read_buf,strlen(read_buf));
-                    printf("write\n");
+                    printf("write:%s",read_buf);
 			        memset(read_buf,'\0',sizeof(read_buf));
                   }
-			    }
+			    }else{
+					printf("no file\n");
+				}
+				
 			}
 			/*write(file_fd,rbuf,strlen(rbuf));
 			memset(rbuf,'\0',sizeof(rbuf));
@@ -198,8 +207,10 @@ int file_yn(char *name,char **filelist){
   int i=0;
   int yn;
   for(i=0;i<100;i++){
-    yn=my_strncmp(name, filelist[i],strlen(name));
-    if(yn==1)
+	int n=strlen(name)>strlen(filelist[i])?strlen(filelist[i]):strlen(name);
+    yn=strncmp(name, filelist[i],n);
+    printf("filename:%s\n",filelist[i]);
+	if(yn==0)
       return 1;
 
   }
