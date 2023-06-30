@@ -8,10 +8,58 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
- 
+
+#include <fcntl.h>
 //#define SERVER_PORT		6000    //
 //#define SERVER_IP		"192.168.99.112"	//服务器IP地址
- 
+int read_server(int connect_fd,char *buf){
+    int read_size;
+    int file_fd;
+    char *filename;
+    while(1){
+      
+    read_size=read(connect_fd, buf, strlen(buf));
+    if(read_size<0){
+	  printf("read error\n");
+	}else if(read_size==0){
+	  printf("connect_fd (%d) is closed\n",connect_fd);
+	  close(connect_fd);
+	  break;
+	  }
+    if(/*is filename*/strncmp(buf, "inforn", 6)){
+      filename=buf+6; 
+      file_fd=open(filename,O_RDWR|O_CREAT,0664);
+    }else{
+
+      write(file_fd, buf, strlen(buf));
+    }
+    memset(buf, '\0', strlen(buf));
+
+
+
+
+  }
+
+
+    return 0;
+} 
+int key_input(int connect_fd,char *buf){
+
+  	while (1)
+	{
+		printf(">");
+		fgets(buf, sizeof(buf), stdin);
+		if (strcmp(buf, "quit\n") == 0)
+		{
+			printf("client will quit!\n");
+			break;
+		}
+		write(connect_fd, buf, strlen(buf));
+	}
+    return 0;
+
+
+}
 int main(int argc, const char *argv[])
 {
 	int connect_fd = -1;
@@ -39,7 +87,7 @@ int main(int argc, const char *argv[])
 	}
  
 	char buf[256] = {0};
-	while (1)
+	/*while (1)
 	{
 		printf(">");
 		fgets(buf, sizeof(buf), stdin);
@@ -49,7 +97,7 @@ int main(int argc, const char *argv[])
 			break;
 		}
 		write(connect_fd, buf, sizeof(buf));
-	}
+	}*/
 	close(connect_fd);
  
 	return 0;
