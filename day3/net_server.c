@@ -25,6 +25,21 @@
 #include <unistd.h>
 #define SERVER_PORT 6000
 #define SERVER_IP "192.168.12.157"
+
+
+int my_strncmp(char *str1,char *str2,int n){
+
+
+  if(strncmp(str1,str2,n)==0){
+
+    return 1;
+  }else if(strncmp(str1,str2,n)!=0){
+
+    return 0;
+  }
+  return -1;
+}
+
 /*struct sockadder{
 	u_short sa_family;
 	char sa_data[14];
@@ -54,7 +69,7 @@ int main(){
 
 
 	char *file_path="./one.text";
-	int file_fd=open("./one.txt",O_RDWR|O_CREAT|O_APPEND,0664);
+//	int file_fd=open("./one.txt",O_RDWR|O_CREAT|O_APPEND,0664);
 	struct sockaddr_in server;
 	struct sockaddr_in client;
 	socklen_t saddrlen =sizeof(server);
@@ -88,61 +103,68 @@ int main(){
 	
 	
 	}
-
+    int file_fd=-1;
 	char rbuf[256]={0};
-	char read[256]={0};
+	char read_buf[256]={0};
 	int read_size=0;
 	int push_file=-1;
 	int down_file=-1;
+    int push_client_fd=-2;
+    int push_flog=-2;
+    int clone_flog=-2;
 
 	while(1){
 	
 		int new_fd =accept(socket_server,(struct sockaddr *)&client,&caddrlen);
-
 		if(new_fd<0){
 			perror("accept");
 			return -1;
-		
 		}
-
-
 		while(1){
-		
 			read_size=read(new_fd,rbuf,sizeof(rbuf));
-
 			if(read_size<0){
 				printf("read error\n");
 			}else if(read_size==0){
 				printf("client (%d) is closed\n",new_fd);
 				close(new_fd);
 				break;
-			
 			}
-			if(strcmp(rbuf,"push")){
+			printf("recv:%s\n",rbuf);
+            int str_push=my_strncmp(rbuf,"pushc:",sizeof("pushc:"));
+            int str_clone=my_strncmp(rbuf,"clone:",6);
+            int inform=!str_push^str_clone;
+            if(!inform){
+              file_path=strcpy(file_path, rbuf+6);
+            }
+			if(str_push|inform){
+              if(str_push)
+	            file_fd=open(file_path,O_RDWR|O_CREAT|O_APPEND,0664);
 			
 				//client to server data
+			  write(file_fd,rbuf,strlen(rbuf));
+			  memset(rbuf,'\0',sizeof(rbuf));
 			
-			}else if(strcmp(rbuf,"clone")){
+			}else if(str_clone|inform){
 			
 				//server to client data
-			
-			
+			    if(/*hava file*/1){
+                  if(str_clone)
+				    push_client_fd=open(file_path,O_RDONLY,0);
+				  read(push_client_fd,read_buf,sizeof(read_buf));
+				  write(new_fd,read_buf,strlen(read_buf));
+			      memset(read_buf,'\0',sizeof(read_buf));
+			    }
 			}
-			printf("recv:%s\n",rbuf);		
-			write(file_fd,rbuf,strlen(rbuf));
+			/*write(file_fd,rbuf,strlen(rbuf));
 			memset(rbuf,'\0',sizeof(rbuf));
 			if(push_file|strcmp(rbuf,file_path)){
-				push_client_fd=open(file_path,O_REONLY,0);
+				push_client_fd=open(file_path,O_RDONLY,0);
 				read_size=read(push_client_fd,read_buf,sizeof(read_buf));
 				write(new_fd,read_buf,strlen(read_buf));
 			
-			}
+			}*/
 		}
-		
-	
 	}
 	close(socket_server);
 	return 0;
-
-
 }
