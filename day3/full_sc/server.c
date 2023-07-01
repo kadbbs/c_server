@@ -170,8 +170,13 @@ int main(){
                 printf("get clone state\n");
 				//server to client data
 			    if(/*hava file*/file_yn(file_name,filelist)){
-                  if(str_clone)
+                  if(str_clone){
 				    push_client_fd=open(file_path,O_RDONLY,0);
+                    char bao_name[100]="inforn";
+                    strcat(bao_name,file_name);
+				    write(new_fd,bao_name,strlen(bao_name));
+			        memset(read_buf,'\0',sizeof(read_buf));
+                }
                   while(1){
 				    int l_size=read(push_client_fd,read_buf,sizeof(read_buf));
                     if(l_size<=0){

@@ -8,14 +8,23 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-
+#include <pthread.h>
 #include <fcntl.h>
 //#define SERVER_PORT		6000    //
 //#define SERVER_IP		"192.168.99.112"	//服务器IP地址
-int read_server(int connect_fd,char *buf){
+struct pt_arg{
+
+  int connect_fd;
+  char *buf;
+};
+void *read_server(void *r_arg){
+    struct pt_arg *arg1=(struct pt_arg*)r_arg;
+    int connect_fd=arg1->connect_fd;
+    char *buf=arg1->buf;
     int read_size;
     int file_fd;
     char *filename;
+    char file_path[100]="./c_dir/";
     while(1){
       
     read_size=read(connect_fd, buf, strlen(buf));
@@ -28,6 +37,8 @@ int read_server(int connect_fd,char *buf){
 	  }
     if(/*is filename*/strncmp(buf, "inforn", 6)){
       filename=buf+6; 
+      printf("filename:%s\n",filename);
+      strcat(file_path,filename);
       file_fd=open(filename,O_RDWR|O_CREAT,0664);
     }else{
 
@@ -43,8 +54,11 @@ int read_server(int connect_fd,char *buf){
 
     return 0;
 } 
-int key_input(int connect_fd,char *buf){
+void *key_input(void *arg){
 
+    struct pt_arg *arg1=(struct pt_arg*)arg;
+    int connect_fd=arg1->connect_fd;
+    char *buf=arg1->buf;
   	while (1)
 	{
 		printf(">");
@@ -87,6 +101,18 @@ int main(int argc, const char *argv[])
 	}
  
 	char buf[256] = {0};
+	char read_buf[256] = {0};
+    struct pt_arg r_arg;
+    struct pt_arg w_arg;
+    r_arg.connect_fd=connect_fd;
+    r_arg.buf=read_buf;
+    w_arg.connect_fd=connect_fd;
+    w_arg.buf=buf;
+    /*ptre*/
+    pthread_t pt[2];
+    pthread_create(&pt[0],NULL,key_input,(void*)&w_arg);
+    pthread_create(&pt[1],NULL,read_server,(void*)&r_arg);
+    //pthread_join(pt,NULL);
 	/*while (1)
 	{
 		printf(">");
