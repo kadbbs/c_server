@@ -158,7 +158,8 @@ int main(){
 			if(str_push|inform){
               if(str_push){
                 printf("push_state\n");
-	            file_fd=open(file_name,O_RDWR|O_CREAT|O_APPEND,0664);
+	            file_fd=open(file_path,O_RDWR|O_CREAT|O_APPEND,0664);
+				memset(file_path,'\0',sizeof(file_path));
 			  }
 				//client to server data
 			  write(file_fd,rbuf,strlen(rbuf));
@@ -172,6 +173,7 @@ int main(){
 			    if(/*hava file*/file_yn(file_name,filelist)){
                   if(str_clone){
 				    push_client_fd=open(file_path,O_RDONLY,0);
+					memset(file_path,'\0',sizeof(file_path));
                     char bao_name[100]="inforn";
                     strcat(bao_name,file_name);
 				    write(new_fd,bao_name,strlen(bao_name));
