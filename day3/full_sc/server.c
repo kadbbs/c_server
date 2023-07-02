@@ -62,13 +62,31 @@ struct sockaddr_un{
 	char sun_path[108];
 
 }*/
+int get_file_list(char **filelist){
+
+  
+    char *server_tree_dir="./s_dir/";
+    DIR *dir_tree=opendir(server_tree_dir);
+    struct dirent *dir_volu;
+    int i=0;
+    while((dir_volu=readdir(dir_tree))!=NULL){
+      filelist[i]=dir_volu->d_name;
+	  printf("filename:%s",filelist[i]);
+	  printf("\n");
+	  i++; 
+    }
+	closedir(dir_tree);
+
+  return 0;
+
+}
 
 int listen_fd =-1;
 
 int main(){
 
 	
-    char *server_tree_dir=".";
+    /*char *server_tree_dir="./s_dir/";
     DIR *dir_tree=opendir(server_tree_dir);
     struct dirent *dir_volu;
     int i=0;
@@ -79,10 +97,11 @@ int main(){
 	  printf("\n");
 	  i++; 
     }
-	closedir(dir_tree);
+	closedir(dir_tree);*/
 	//char file_path_volu[9]="./one.txt";
     //char *file_path="./one.txt";
 //	int file_fd=open("./one.txt",O_RDWR|O_CREAT|O_APPEND,0664);
+    char *filelist[100];
 	struct sockaddr_in server;
 	struct sockaddr_in client;
 	socklen_t saddrlen =sizeof(server);
@@ -126,7 +145,7 @@ int main(){
     int push_flog=-2;
     int clone_flog=-2;
     char *file_name;
-    char file_path[100]="./";
+    char file_path[100]="./s_dir/";
 	while(1){
 	
 		int new_fd =accept(socket_server,(struct sockaddr *)&client,&caddrlen);
@@ -149,6 +168,7 @@ int main(){
             int inform=!str_push^str_clone;
             if(!inform){
               //file_path=strcpy(file_path_volu, rbuf+6);
+			  	strcpy(file_path,"./s_dir/");
                 file_name=strstr(rbuf,":")+1;
 				file_name[strlen(file_name)-1]='\0';
 				printf("path_name=%s\n",file_name);
@@ -170,6 +190,7 @@ int main(){
                 //file_path="./one.txt";
                 printf("get clone state\n");
 				//server to client data
+                get_file_list(filelist);
 			    if(/*hava file*/file_yn(file_name,filelist)){
                   if(str_clone){
 				    push_client_fd=open(file_path,O_RDONLY,0);
