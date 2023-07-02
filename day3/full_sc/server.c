@@ -154,7 +154,7 @@ int main(){
 			return -1;
 		}
 		while(1){
-			read_size=read(new_fd,rbuf,sizeof(rbuf));
+ 			read_size=read(new_fd,rbuf,sizeof(rbuf));
 			if(read_size<0){
 				printf("read error\n");
 			}else if(read_size==0){

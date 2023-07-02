@@ -14,6 +14,7 @@
 //#define SERVER_IP		"192.168.99.112"	//服务器IP地址
 	int connect_fd = -1;
     pthread_mutex_t mutex;
+    pthread_cond_t cond1,cond2;
 /*struct pt_arg{
 
   int connect_fd;
@@ -23,7 +24,7 @@ void *read_server(void *r_arg){
     //struct pt_arg *arg1=(struct pt_arg*)r_arg;
     //int connect_fd=arg1->connect_fd;
     //char *buf=arg1->buf;
-    printf("read_server\n");
+    printf("read_\n");
     int read_size;
 	char buf[256] = {0};
     int file_fd;
@@ -31,8 +32,8 @@ void *read_server(void *r_arg){
     char file_path[100]="./c_dir/";
     while(1){
       
-        pthread_mutex_lock(&mutex);
-    read_size=read(connect_fd, buf, strlen(buf));
+        //pthread_mutex_lock(&mutex);
+    read_size=read(connect_fd, buf, sizeof(buf));
     if(read_size<0){
 	  printf("read error\n");
 	}else if(read_size==0){
@@ -43,22 +44,19 @@ void *read_server(void *r_arg){
     printf("server_read\n");
     if(/*is filename*/strncmp(buf, "inforn", 6)){
       filename=buf+6; 
-      printf("filename:%s\n",filename);
+      printf("1filename:%s\n",filename);
       strcat(file_path,filename);
-      file_fd=open(filename,O_RDWR|O_CREAT,0664);
+      file_fd=open(file_path,O_RDWR|O_CREAT,0664);
+      strcpy(file_path,"./c_dir/");
     }else{
 
       write(file_fd, buf, strlen(buf));
     }
-    memset(buf, '\0', strlen(buf));
-
-
-
-
+    memset(buf, '\0', sizeof(buf));  
   }
 
-      pthread_mutex_unlock(&mutex);
-
+//      pthread_mutex_unlock(&mutex);
+    printf("jk\n");
     return 0;
 } 
 void *key_input(void *arg){
@@ -66,12 +64,18 @@ void *key_input(void *arg){
     //struct pt_arg *arg1=(struct pt_arg*)arg;
     //int connect_fd=arg1->connect_fd;
     //char *buf=arg1->buf;
+    pthread_t pt2;
 	char buf[256] = {0};
   	while (1)
 	{
         pthread_mutex_lock(&mutex);
 		printf(">");
 		fgets(buf, sizeof(buf), stdin);
+    if(pthread_create(&pt2,NULL,read_server,NULL)!=0){
+
+    perror("error creating key");
+    return NULL;
+  }
 		if (strcmp(buf, "quit\n") == 0)
 		{
 			printf("client will quit!\n");
@@ -80,13 +84,16 @@ void *key_input(void *arg){
 		write(connect_fd, buf, strlen(buf));
       pthread_mutex_unlock(&mutex);
 	}
-    return 0;
+    return NULL;
 
 
 }
 int main(int argc, const char *argv[])
 {
     pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&cond1,NULL);
+    pthread_cond_init(&cond2,NULL);
+    
 	struct sockaddr_in server;
 	socklen_t saddrlen = sizeof(server);
  
@@ -128,17 +135,19 @@ int main(int argc, const char *argv[])
 
 
   }
-    if(pthread_create(&pt2,NULL,read_server,NULL)!=0){
+/*    if(pthread_create(&pt2,NULL,read_server,NULL)!=0){
 
     perror("error creating key");
     return -1;
-  }
+  }*/
     
 
     pthread_join(pt1,NULL);
-    pthread_join(pt2,NULL);
+   // pthread_join(pt2,NULL);
 
     pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&cond1);
+    pthread_cond_destroy(&cond2);
     //pthread_join(pt,NULL);
 	/*while (1)
 	{
