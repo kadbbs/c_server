@@ -42,11 +42,11 @@ void *read_server(void *r_arg){
 	  break;
 	  }
     printf("server_read\n");
-    if(/*is filename*/strncmp(buf, "inforn", 6)){
+    if(/*is filename*/strncmp(buf, "inforn", 6)==0){
       filename=buf+6; 
       printf("1filename:%s\n",filename);
       strcat(file_path,filename);
-      file_fd=open(file_path,O_RDWR|O_CREAT,0664);
+      file_fd=open(file_path,O_RDWR|O_CREAT|O_APPEND,0664);
       strcpy(file_path,"./c_dir/");
     }else{
 

@@ -198,8 +198,9 @@ int main(){
                     char bao_name[100]="inforn";
                     strcat(bao_name,file_name);
 				    write(new_fd,bao_name,strlen(bao_name));
+					strcpy(bao_name,"inforn");
 			        memset(read_buf,'\0',sizeof(read_buf));
-                }
+                	}
                   while(1){
 				    int l_size=read(push_client_fd,read_buf,sizeof(read_buf));
                     if(l_size<=0){
