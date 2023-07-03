@@ -1,0 +1,121 @@
+���
+    pthrea��������r, SCHED_FIFO);
+
+    // 设置线程优先级
+    param.sched_priority = sched_get_priority_max(SCHED_FIFO);  // 最高优先级
+    pthread_attr_setschedparam(&attr, &param);
+
+    // 创建线程
+    pthread_create(&thread, &attr, thread_func, NULL);
+
+   aram;
+��, thre��ad_func, NULL);
+
+    // 销毁线程属性
+    pthread_attr_destroy(&attr);
+
+    return 0;
+}
+#include <pthread.h>
+
+void* thread_func(void* arg) {
+    // 线程逻辑
+    return NULL;
+}
+
+int main() {
+    pthread_t thread;
+    pthread_attr_t attr��）
+    pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+
+    // 设置线程优先级
+    param.sched_priority = sched_get_priority_max(SCHED_FIFO);  // 最高优先级
+    pthread_attr_setschedparam(&attr, &param);
+
+    // 创建线程
+    pthread_c pthread_att��r_t attr;
+    struct sched_param param;
+
+    // 初始化线程属性
+    pthread_attr_init(&attr);
+
+    // 设置线程属性为可更改调度策略
+    pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+
+    // 设置线程�m);
+
+    // 创建线程��
+    pthread_create(&thread, &attr, thread_func, NULL);
+
+    // 销毁线程属性
+    pthread_attr_destroy(&attr);
+
+    return 0;
+}
+#include <pthread.h>
+
+void* thread_func(void* arg) {
+    // 线程逻辑
+    return NULL;
+}
+
+int main() {
+    pthread_t thr线程��调度策略为SCHED_FIFO（先入先出）
+    pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+
+    // 设置线程优先级
+    param.sched_priority = sched_get_priority_max(SCHED_FIFO);  // 最高优先级
+    pthread_attr_setschedparam(&attULL;
+}
+
+int main()�� {
+    pthread_t thread;
+    pthread_attr_t attr;
+    struct sched_param param;
+
+    // 初始化线程属性
+    pthread_attr_init(&attr);
+
+    // 设置线程属性为可更改调度策略
+    pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+chedpa��ram(&attr, &param);
+
+    // 创建线程
+    pthread_create(&thread, &attr, thread_func, NULL);
+
+    // 销毁线程属性
+    pthread_attr_destroy(&attr);
+
+    return 0;
+}
+#include <pthread.h>
+
+void* thread_func(void* arg) {
+    // 线程逻���AD_EXPLICIT_SCHED);
+
+    // 设置线程调度策略为SCHED_FIFO（先入先出）
+    pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+
+    // 设置线程优先级
+    param.sched_priority = sched_get_priority_max(SCHED_FIFO);  // 最高优先级
+ ��itsched(&attr, PTHREAD_EXPLICIT_SCHED);
+
+    // 设置线程调度策略为SCHED_FIFO（先入先出）
+    pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+
+    // 设置线程优先级
+    param.sched_priority = sched_get_priority_max(SCHED_FIFO);   sched_get_priority_max(��SCHED_FIFO);  // 最高优先级
+    pthread_attr_setschedparam(&attr, &param);
+
+    // 创建线程
+    pthread_create(&thread, &attr, thread_func, NULL);
+
+    // 销毁线程属性
+    pthread_attr_destroy(&attr);
+
+    returthread_attr_destroy(&attr);
+
+    return 0;
+}
+
+��
