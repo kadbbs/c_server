@@ -146,6 +146,7 @@ int main(){
     int clone_flog=-2;
     char *file_name;
     char file_path[100]="./s_dir/";
+	int push_work=0;
 	while(1){
 	
 		int new_fd =accept(socket_server,(struct sockaddr *)&client,&caddrlen);
@@ -177,6 +178,7 @@ int main(){
             }
 			if(str_push|inform){
               if(str_push){
+				push_work=1;
                 printf("push_state\n");
 	            file_fd=open(file_path,O_RDWR|O_CREAT|O_APPEND,0664);
 				memset(file_path,'\0',sizeof(file_path));
@@ -186,6 +188,10 @@ int main(){
 			  memset(rbuf,'\0',sizeof(rbuf));
 			
 			}else if(str_clone){
+				if(push_work){
+					close(file_fd);
+					push_work=0;
+				}
 			
                 //file_path="./one.txt";
                 printf("get clone state\n");
@@ -205,12 +211,15 @@ int main(){
                   while(1){
 				    int l_size=read(push_client_fd,read_buf,sizeof(read_buf));
                     if(l_size<=0){
+						close(push_client_fd);
+						write(new_fd,"over",4);
                       printf("filesize=0\n");
                       break;
 
                     }
                     
 				    write(new_fd,read_buf,strlen(read_buf));
+					sleep(1);
                     printf("write:%s",read_buf);
 			        memset(read_buf,'\0',sizeof(read_buf));
                   }

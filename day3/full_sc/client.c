@@ -49,8 +49,11 @@ void *read_server(void *r_arg){
       file_fd=open(file_path,O_RDWR|O_CREAT|O_APPEND,0664);
       strcpy(file_path,"./c_dir/");
     }else{
-
+      if(strncmp(buf,"over",4)==0){
+        close(file_fd);
+      }else{
       write(file_fd, buf, strlen(buf));
+      }
     }
     memset(buf, '\0', sizeof(buf));  
   }
